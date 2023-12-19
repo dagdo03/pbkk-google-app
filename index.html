@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="">
+    <title>Ihsan Widagdo</title>
+</head>
+<body>
+    <div class="form-container">
+        <form name="submit-to-google-sheet" id="form">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <input name="firstName" type="text" placeholder="First Name" required>
+          <input name="lastName" type="text" placeholder="Last Name Name">
+          <select
+          required
+          name="game"
+          value=""
+          onclick="this.setAttribute('value', this.value);"
+          class="pt-3 pb-2 block w-full px-0 mt-0 bg-transparent border-0 border-b-2 appearance-none z-1 focus:outline-none focus:ring-0 focus:border-black border-gray-300"
+        >
+          <option value="" selected disabled hidden></option>
+          <option value="valorant">Valorant</option>
+          <option value="dota">DOTA</option>
+          <option value="csgo">CSGO</option>
+        </select>
+          <button type="submit">Submit</button>
+        </form>
+    
+        <div class="loading js-loading is-hidden">
+          <div class="loading-spinner">
+            <svg><circle cx="25" cy="25" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/></svg>
+          </div>
+        </div>
+    
+        <p class="js-success-message is-hidden">Success!</p>
+        <p class="js-error-message is-hidden">Error!</p>
+      </div>
+
+
+      <script>
+        document.getElementById("form").addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent the default form submission
+          const submitButton = document.getElementById("submit");
+          const message = document.getElementById("message");
+
+          // message.style.display = "block";
+  
+        //   submitButton.disabled = true;
+        //   submitButton.style.cursor = "not-allowed";
+        //   submitButton.style.opacity = "0.5";
+        //   submitButton.style.backgroundColor = "gray";
+  
+          // Collect the form data
+          var formData = new FormData(this);
+          var keyValuePairs = [];
+          for (var pair of formData.entries()) {
+            keyValuePairs.push(pair[0] + "=" + pair[1]);
+          }
+  
+          var formDataString = keyValuePairs.join("&");
+  
+          console.log(formDataString);
+  
+          // Send a POST request to your Google Apps Script
+          fetch(
+            "https://script.google.com/macros/s/AKfycbxoj7iISQbygojKhuoghhT6WM3VxSszYyDd9mUf59DQCZ7YeNP1jSCZvzVcQSKwqP7-/exec",
+            {
+              redirect: "follow",
+              method: "POST",
+              body: formDataString,
+              headers: {
+                "Content-Type": "text/plain;charset=utf-8",
+              },
+            }
+          )
+            .then(function (response) {
+              // Check if the request was successful
+              if (response) {
+                return response; // Assuming your script returns JSON response
+              } else {
+                throw new Error("Failed to submit the form.");
+              }
+            })
+            .then(function (data) {
+              // Display a success message
+              message.textContent = "Data submitted successfully!";
+              // message.style.display = "block";
+              // message.style.backgroundColor = "#006A4E";
+              message.style.color = "#018749";
+              message.style.paddingTop = "0.5rem";
+              message.style.paddingBottom = "0.5rem";
+              message.style.fontWeight = "bold";
+  
+              submitButton.disabled = false;
+              submitButton.style.backgroundColor = currentColor;
+              submitButton.style.cursor = "pointer";
+              submitButton.style.opacity = "1";
+              document.getElementById("form").reset();
+  
+              setTimeout(function () {
+                message.textContent = "";
+                message.style.display = "none";
+              }, 2600);
+            })
+            .catch(function (error) {
+              // Handle errors, you can display an error message here
+              console.error(error);
+              message.textContent =
+                "An error occurred while submitting the form.";
+              message.style.display = "block";
+            });
+        });
+      </script>
+</body>
+</html>
